@@ -1,6 +1,4 @@
-// lib.cpp
-
-#include "lib.h"
+#include "lib.hpp"
 #include <iostream>
 #include <thread>
 #include <random>
