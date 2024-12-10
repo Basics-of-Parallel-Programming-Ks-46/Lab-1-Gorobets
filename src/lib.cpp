@@ -1,3 +1,5 @@
+// lib.cpp
+
 #include "lib.hpp"
 #include <iostream>
 #include <thread>
@@ -9,10 +11,8 @@ std::mutex tableMutex;                 // Мьютекс для синхрони
 std::condition_variable tableReady;    // Условная переменная для уведомления о готовности компонентов на столе
 bool componentsOnTable = false;        // Флаг наличия компонентов на столе
 bool finished = false;                 // Флаг завершения работы
-int rounds = 0;                       // Счётчик раздач
+int rounds = 0;                        // Счётчик раздач
 
-// Тип компонента: табак, бумага или спички
-enum Component { TOBACCO, PAPER, MATCH };
 Component table[2];                    // Массив для хранения компонентов на столе
 
 // Посредник кладет два случайных компонента на стол
@@ -38,67 +38,39 @@ void agent(int maxRounds) {
         componentsOnTable = true;
         rounds++;
 
-        std::cout << "The agent put the components: "
-            << (firstComponent == 0 ? "tobacco" : (firstComponent == 1 ? "paper" : "matches"))
-            << " and "
-            << (secondComponent == 0 ? "tobacco" : (secondComponent == 1 ? "paper" : "matches"))
-            << std::endl;
+        std::cout << "Посредник положил компоненты: " 
+                  << (firstComponent == 0 ? "табак" : (firstComponent == 1 ? "бумага" : "спички")) 
+                  << " и " 
+                  << (secondComponent == 0 ? "табак" : (secondComponent == 1 ? "бумага" : "спички")) 
+                  << std::endl;
 
         tableReady.notify_all();
     }
+
     // Устанавливаем флаг завершения и оповещаем курильщиков
     finished = true;
     tableReady.notify_all();
-
 }
 
-// Курильщик с табаком
-void smokerWithTobacco(int& tobaccoSmokedCount) {
+// Универсальная функция для курильщика
+void smoker(Component ownedComponent, int& smokedCount) {
     while (true) {
         std::unique_lock<std::mutex> lock(tableMutex);
-        while (!componentsOnTable || (table[0] == TOBACCO || table[1] == TOBACCO)) {
+
+        // Ожидание компонентов на столе или завершения работы
+        while (!componentsOnTable || 
+               (table[0] == ownedComponent || table[1] == ownedComponent)) {
             tableReady.wait(lock);
             if (finished) return;  // Завершение, если работа окончена
         }
 
-        // Забирает компоненты
-        std::cout << "A smoker with tobacco is smoking." << std::endl;
-        tobaccoSmokedCount++;
+        // Забирает компоненты и "курит"
+        std::cout << "Курильщик с компонентом " 
+                  << (ownedComponent == TOBACCO ? "табак" : (ownedComponent == PAPER ? "бумага" : "спички")) 
+                  << " скрутил сигарету и курит." << std::endl;
+        smokedCount++;
         componentsOnTable = false;
-        tableReady.notify_all();
-    }
-}
 
-// Курильщик с бумагой
-void smokerWithPaper(int& paperSmokedCount) {
-    while (true) {
-        std::unique_lock<std::mutex> lock(tableMutex);
-        while (!componentsOnTable || (table[0] == PAPER || table[1] == PAPER)) {
-            tableReady.wait(lock);
-            if (finished) return;  // Завершение, если работа окончена
-        }
-
-        // Забирает компоненты
-        std::cout << "A smoker with paper is smoking." << std::endl;
-        paperSmokedCount++;
-        componentsOnTable = false;
-        tableReady.notify_all();
-    }
-}
-
-// Курильщик со спичками
-void smokerWithMatch(int& matchSmokedCount) {
-    while (true) {
-        std::unique_lock<std::mutex> lock(tableMutex);
-        while (!componentsOnTable || (table[0] == MATCH || table[1] == MATCH)) {
-            tableReady.wait(lock);
-            if (finished) return;  // Завершение, если работа окончена
-        }
-
-        // Забирает компоненты
-        std::cout << "A smoker with matches is smoking." << std::endl;
-        matchSmokedCount++;
-        componentsOnTable = false;
         tableReady.notify_all();
     }
 }
