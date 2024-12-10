@@ -64,9 +64,9 @@ void smoker(Component ownedComponent, int& smokedCount) {
         }
 
         // Забирает компоненты и "курит"
-        std::cout << "Курильщик с компонентом " 
-                  << (ownedComponent == TOBACCO ? "табак" : (ownedComponent == PAPER ? "бумага" : "спички")) 
-                  << " скрутил сигарету и курит." << std::endl;
+        std::cout << "Smoker with " 
+                  << (ownedComponent == TOBACCO ? "tabacco" : (ownedComponent == PAPER ? "paper" : "mathes")) 
+                  << " smokes a cigarette." << std::endl;
         smokedCount++;
         componentsOnTable = false;
 
