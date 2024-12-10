@@ -1,3 +1,5 @@
+// main.cpp
+
 #include "lib.hpp"
 #include <thread>
 #include <iostream>
@@ -6,13 +8,14 @@ int main() {
     int tobaccoSmokedCount = 0;
     int paperSmokedCount = 0;
     int matchSmokedCount = 0;
-    int iterationcount = 0;
-    std::cin >> iterationcount;
 
-    std::thread smoker1(smokerWithTobacco, std::ref(tobaccoSmokedCount));
-    std::thread smoker2(smokerWithPaper, std::ref(paperSmokedCount));
-    std::thread smoker3(smokerWithMatch, std::ref(matchSmokedCount));
-    std::thread agentThread(agent, iterationcount);
+    // Запуск потоков для курильщиков
+    std::thread smoker1(smoker, TOBACCO, std::ref(tobaccoSmokedCount));
+    std::thread smoker2(smoker, PAPER, std::ref(paperSmokedCount));
+    std::thread smoker3(smoker, MATCH, std::ref(matchSmokedCount));
+
+    // Запуск посредника
+    std::thread agentThread(agent, 10);
 
     smoker1.join();
     smoker2.join();
