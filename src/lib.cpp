@@ -37,12 +37,11 @@ void agent(int maxRounds) {
         table[1] = static_cast<Component>(secondComponent);
         componentsOnTable = true;
         rounds++;
-
-        std::cout << "Посредник положил компоненты: " 
-                  << (firstComponent == 0 ? "табак" : (firstComponent == 1 ? "бумага" : "спички")) 
-                  << " и " 
-                  << (secondComponent == 0 ? "табак" : (secondComponent == 1 ? "бумага" : "спички")) 
-                  << std::endl;
+        std::cout << "The agent put the components: "
+            << (firstComponent == 0 ? "tobacco" : (firstComponent == 1 ? "paper" : "matches"))
+            << " and "
+            << (secondComponent == 0 ? "tobacco" : (secondComponent == 1 ? "paper" : "matches"))
+            << std::endl;
 
         tableReady.notify_all();
     }
