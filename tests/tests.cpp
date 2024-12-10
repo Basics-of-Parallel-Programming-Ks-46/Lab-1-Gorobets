@@ -3,6 +3,6 @@
 
 
 int main(int argc, char* argv[]) {
-  //TODO
-  return 1;
+  //nothing to do
+  return 0;
 }
